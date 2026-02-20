@@ -1,192 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScentCraft Global</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScentCraft Global</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Load Babel to read JSX code -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-
 <body class="bg-slate-50 text-slate-900 font-sans selection:bg-amber-200">
-<div id="root"></div>
+    
+    <div id="root"></div>
 
-<script type="text/babel">
-const { useState } = React;
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-/* ================= MASTER DATABASE ================= */
+        // ==========================================
+        // MASTER BUILT-IN DATABASE
+        // You can add as many as you want here!
+        // ==========================================
+        const MASTER_DATABASE = [
+          { id: 1, name: "Sauvage", brand: "Dior", time: "Both", notes: ["Bergamot", "Pepper", "Ambroxan"], type: "Fresh Spicy", estimated_cost: "$120 - $160", description: "A radically fresh composition, raw and noble at once." },
+          { id: 2, name: "Bleu de Chanel", brand: "Chanel", time: "Both", notes: ["Grapefruit", "Lemon", "Mint", "Ginger"], type: "Woody Aromatic", estimated_cost: "$130 - $180", description: "A woody, aromatic fragrance for the man who defies convention." },
+          { id: 3, name: "Eros", brand: "Versace", time: "Night", notes: ["Mint", "Green Apple", "Vanilla"], type: "Aromatic Fougere", estimated_cost: "$90 - $130", description: "Fierce, vibrant, and glowing with fresh mint leaves and green apple." },
+          { id: 4, name: "Uomo Born In Roma", brand: "Valentino", time: "Both", notes: ["Mineral Salt", "Ginger", "Vetiver"], type: "Woody Spicy", estimated_cost: "$120 - $150", description: "A modern aromatic vetiver fragrance inspired by Rome." },
+          { id: 5, name: "Y Eau de Parfum", brand: "Yves Saint Laurent", time: "Day", notes: ["Apple", "Ginger", "Sage", "Juniper"], type: "Aromatic Fougere", estimated_cost: "$140 - $170", description: "A bold and woody men's fragrance." },
+          { id: 6, name: "Acqua Di Giò Profumo", brand: "Giorgio Armani", time: "Day", notes: ["Sea Notes", "Bergamot", "Incense"], type: "Aromatic Aquatic", estimated_cost: "$110 - $150", description: "Deep, sophisticated, and intensely masculine." },
+          { id: 7, name: "Spicebomb Extreme", brand: "Viktor&Rolf", time: "Night", notes: ["Vanilla", "Tobacco", "Black Pepper"], type: "Oriental Spicy", estimated_cost: "$120 - $160", description: "An explosive cocktail of masculine sensuality." },
+          { id: 8, name: "Oud Wood", brand: "Tom Ford", time: "Night", notes: ["Oud", "Rosewood", "Cardamom", "Sandalwood"], type: "Woody", estimated_cost: "$295 - $445", description: "Rare, exotic, distinctive." },
+          { id: 9, name: "Aventus", brand: "Creed", time: "Day", notes: ["Pineapple", "Birch", "Musk", "Blackcurrant"], type: "Fruity Chypre", estimated_cost: "$365 - $495", description: "Celebrating strength, power and success." },
+          { id: 10, name: "Prada Black", brand: "Prada", time: "Night", notes: ["Bergamot", "Angelica", "Coumarin", "Amber"], type: "Oriental Woody", estimated_cost: "$110 - $140", description: "A highly energetic and mysterious fragrance." },
+          { id: 11, name: "Guilty Pour Homme", brand: "Gucci", time: "Night", notes: ["Lavender", "Lemon", "Orange Flower", "Cedarwood"], type: "Woody Aromatic", estimated_cost: "$100 - $140", description: "An intense and individual contemporary signature." },
+          { id: 12, name: "1 Million", brand: "Paco Rabanne", time: "Night", notes: ["Blood Mandarin", "Cinnamon", "Leather"], type: "Woody Spicy", estimated_cost: "$100 - $130", description: "The scent of success. Going for gold." },
+          { id: 13, name: "Le Male", brand: "Jean Paul Gaultier", time: "Night", notes: ["Mint", "Lavender", "Vanilla"], type: "Oriental Fougere", estimated_cost: "$90 - $120", description: "A tribute to the mythical figure that has forever inspired the creator: the sailor." },
+          { id: 14, name: "Terre d'Hermès", brand: "Hermès", time: "Day", notes: ["Orange", "Grapefruit", "Pepper", "Vetiver"], type: "Woody Spicy", estimated_cost: "$120 - $160", description: "A symbolic narrative revolving around a raw material and its metamorphosis." },
+          { id: 15, name: "Light Blue Pour Homme", brand: "Dolce & Gabbana", time: "Day", notes: ["Grapefruit", "Bergamot", "Rosemary"], type: "Citrus Aromatic", estimated_cost: "$80 - $110", description: "The quintessence of the joy of life and seduction." }
+        ];
 
-  const MASTER_DATABASE = [
+        const AVAILABLE_NOTES = {
+          top: ["Bergamot", "Lemon", "Grapefruit", "Sea Salt", "Black Pepper", "Mint"],
+          heart: ["Lavender", "Rose", "Jasmine", "Cinnamon", "Cardamom", "Pine"],
+          base: ["Vanilla", "Musk", "Cedar", "Oud", "Patchouli", "Amber", "Leather", "Sandalwood"]
+        };
 
-{ id:1,name:"Sauvage",brand:"Dior",time:"Both",notes:["Bergamot","Pepper","Ambroxan"],type:"Fresh Spicy",estimated_cost:"$120 - $160",description:"A radically fresh composition, raw and noble at once."},
-{ id:2,name:"Bleu de Chanel",brand:"Chanel",time:"Both",notes:["Grapefruit","Lemon","Mint","Ginger"],type:"Woody Aromatic",estimated_cost:"$130 - $180",description:"A woody, aromatic fragrance for the man who defies convention."},
-{ id:3,name:"Eros",brand:"Versace",time:"Night",notes:["Mint","Green Apple","Vanilla"],type:"Aromatic Fougere",estimated_cost:"$90 - $130",description:"Fierce, vibrant and glowing."},
-{ id:4,name:"Uomo Born In Roma",brand:"Valentino",time:"Both",notes:["Mineral Salt","Ginger","Vetiver"],type:"Woody Spicy",estimated_cost:"$120 - $150",description:"A modern aromatic vetiver fragrance."},
-{ id:5,name:"Y Eau de Parfum",brand:"Yves Saint Laurent",time:"Day",notes:["Apple","Ginger","Sage","Juniper"],type:"Aromatic Fougere",estimated_cost:"$140 - $170",description:"Bold and woody with freshness."},
-{ id:6,name:"Acqua Di Giò Profumo",brand:"Giorgio Armani",time:"Day",notes:["Sea Notes","Bergamot","Incense"],type:"Aromatic Aquatic",estimated_cost:"$110 - $150",description:"Deep and sophisticated."},
-{ id:7,name:"Spicebomb Extreme",brand:"Viktor&Rolf",time:"Night",notes:["Vanilla","Tobacco","Black Pepper"],type:"Oriental Spicy",estimated_cost:"$120 - $160",description:"An explosive cocktail of sensuality."},
-{ id:8,name:"Oud Wood",brand:"Tom Ford",time:"Night",notes:["Oud","Rosewood","Cardamom","Sandalwood"],type:"Woody",estimated_cost:"$295 - $445",description:"Rare and exotic."},
-{ id:9,name:"Aventus",brand:"Creed",time:"Day",notes:["Pineapple","Birch","Musk","Blackcurrant"],type:"Fruity Chypre",estimated_cost:"$365 - $495",description:"Strength, power and success."},
-{ id:10,name:"Prada Black",brand:"Prada",time:"Night",notes:["Bergamot","Angelica","Coumarin","Amber"],type:"Oriental Woody",estimated_cost:"$110 - $140",description:"Energetic and mysterious."},
-{ id:11,name:"Guilty Pour Homme",brand:"Gucci",time:"Night",notes:["Lavender","Lemon","Orange Flower","Cedarwood"],type:"Woody Aromatic",estimated_cost:"$100 - $140",description:"Modern intensity."},
-{ id:12,name:"1 Million",brand:"Paco Rabanne",time:"Night",notes:["Blood Mandarin","Cinnamon","Leather"],type:"Woody Spicy",estimated_cost:"$100 - $130",description:"The scent of success."},
-{ id:13,name:"Le Male",brand:"Jean Paul Gaultier",time:"Night",notes:["Mint","Lavender","Vanilla"],type:"Oriental Fougere",estimated_cost:"$90 - $120",description:"Iconic sweet freshness."},
-{ id:14,name:"Terre d'Hermès",brand:"Hermès",time:"Day",notes:["Orange","Grapefruit","Pepper","Vetiver"],type:"Woody Spicy",estimated_cost:"$120 - $160",description:"Earthy and refined."},
-{ id:15,name:"Light Blue Pour Homme",brand:"Dolce & Gabbana",time:"Day",notes:["Grapefruit","Bergamot","Rosemary"],type:"Citrus Aromatic",estimated_cost:"$80 - $110",description:"Fresh Mediterranean breeze."},
+        // ==========================================
+        // MAIN APP
+        // ==========================================
 
-{ id:16,name:"The One EDP",brand:"Dolce & Gabbana",time:"Night",notes:["Tobacco","Amber","Ginger"],type:"Oriental Spicy",estimated_cost:"$110 - $150",description:"Warm and seductive."},
-{ id:17,name:"Ultra Male",brand:"Jean Paul Gaultier",time:"Night",notes:["Pear","Lavender","Vanilla"],type:"Oriental Fougere",estimated_cost:"$100 - $130",description:"Bold and sweet."},
-{ id:18,name:"Layton",brand:"Parfums de Marly",time:"Both",notes:["Apple","Vanilla","Cardamom"],type:"Amber Vanilla",estimated_cost:"$280 - $350",description:"Smooth elegance."},
-{ id:19,name:"Hacivat",brand:"Nishane",time:"Day",notes:["Pineapple","Oakmoss","Grapefruit"],type:"Chypre",estimated_cost:"$300 - $380",description:"Bright citrus depth."},
-{ id:20,name:"Jazz Club",brand:"Maison Margiela",time:"Night",notes:["Rum","Tobacco","Vanilla"],type:"Amber Woody",estimated_cost:"$120 - $150",description:"Cozy jazz bar vibe."},
-{ id:21,name:"Explorer",brand:"Montblanc",time:"Day",notes:["Bergamot","Vetiver","Patchouli"],type:"Woody Aromatic",estimated_cost:"$60 - $90",description:"Adventurous daily wear."},
-{ id:22,name:"Club de Nuit Intense",brand:"Armaf",time:"Both",notes:["Lemon","Birch","Musk"],type:"Woody Fruity",estimated_cost:"$40 - $60",description:"Affordable powerhouse."},
-{ id:23,name:"Invictus",brand:"Paco Rabanne",time:"Day",notes:["Sea Notes","Grapefruit","Ambergris"],type:"Aquatic",estimated_cost:"$90 - $120",description:"Sporty freshness."},
-{ id:24,name:"Azzaro Wanted",brand:"Azzaro",time:"Night",notes:["Cardamom","Toffee","Amberwood"],type:"Sweet Spicy",estimated_cost:"$85 - $110",description:"Playful and seductive."},
-{ id:25,name:"Burberry Hero",brand:"Burberry",time:"Both",notes:["Bergamot","Juniper","Cedarwood"],type:"Woody Fresh",estimated_cost:"$100 - $140",description:"Modern strength."},
+        function App() {
+          const [activeTab, setActiveTab] = useState('discover');
+          const [customColognes, setCustomColognes] = useState([]);
+          
+          return (
+            <div className="min-h-screen">
+              <header className="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+                <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl">🧪</span>
+                      <h1 className="text-2xl font-bold tracking-wider uppercase">Scent<span className="text-amber-400">Craft</span></h1>
+                    </div>
+                    
+                    <nav className="flex bg-slate-800 rounded-full p-1 border border-slate-700 w-full md:w-auto overflow-x-auto shadow-inner">
+                      <button onClick={() => setActiveTab('discover')} className={`flex-1 md:flex-none whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeTab === 'discover' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'}`}>
+                        Search Catalog
+                      </button>
+                      <button onClick={() => setActiveTab('create')} className={`flex-1 md:flex-none whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeTab === 'create' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'}`}>
+                        Create Lab
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </header>
 
-{ id:26,name:"Stronger With You",brand:"Armani",time:"Night",notes:["Chestnut","Vanilla","Pink Pepper"],type:"Amber Sweet",estimated_cost:"$100 - $130",description:"Warm and addictive."},
-{ id:27,name:"BDC Parfum",brand:"Chanel",time:"Night",notes:["Lemon","Sandalwood","Cedar"],type:"Woody Aromatic",estimated_cost:"$150 - $190",description:"Deep refined elegance."},
-{ id:28,name:"Dylan Blue",brand:"Versace",time:"Both",notes:["Bergamot","Incense","Musk"],type:"Aromatic Fougere",estimated_cost:"$80 - $110",description:"Fresh with depth."},
-{ id:29,name:"Reflection Man",brand:"Amouage",time:"Day",notes:["Neroli","Jasmine","Sandalwood"],type:"Woody Floral",estimated_cost:"$320 - $380",description:"Clean luxury."},
-{ id:30,name:"Herod",brand:"Parfums de Marly",time:"Night",notes:["Tobacco","Vanilla","Cinnamon"],type:"Amber Spicy",estimated_cost:"$280 - $340",description:"Rich tobacco warmth."},
-{ id:31,name:"Ombre Leather",brand:"Tom Ford",time:"Night",notes:["Leather","Cardamom","Amber"],type:"Leather",estimated_cost:"$160 - $200",description:"Dark leather intensity."},
-{ id:32,name:"Luna Rossa Carbon",brand:"Prada",time:"Day",notes:["Bergamot","Lavender","Ambroxan"],type:"Fresh Aromatic",estimated_cost:"$95 - $130",description:"Clean metallic freshness."},
-{ id:33,name:"Cedrat Boise",brand:"Mancera",time:"Both",notes:["Citrus","Blackcurrant","Leather"],type:"Fruity Woody",estimated_cost:"$150 - $190",description:"Bright yet masculine."},
-{ id:34,name:"Elysium",brand:"Roja Parfums",time:"Day",notes:["Grapefruit","Juniper","Vetiver"],type:"Fresh Citrus",estimated_cost:"$300 - $380",description:"Luxury freshness."},
-{ id:35,name:"Red Tobacco",brand:"Mancera",time:"Night",notes:["Tobacco","Cinnamon","Vanilla"],type:"Sweet Tobacco",estimated_cost:"$150 - $180",description:"Powerful projection."},
+              <main className="max-w-6xl mx-auto px-4 py-8">
+                {activeTab === 'discover' ? <DiscoverTab customData={customColognes} /> : <CreateTab onCreated={(c) => { setCustomColognes([c, ...customColognes]); setActiveTab('discover'); }} />}
+              </main>
+            </div>
+          );
+        }
 
-{ id:36,name:"Toy Boy",brand:"Moschino",time:"Night",notes:["Pink Pepper","Rose","Amber"],type:"Spicy Floral",estimated_cost:"$80 - $110",description:"Playful spice."},
-{ id:37,name:"Nautica Voyage",brand:"Nautica",time:"Day",notes:["Apple","Green Leaves","Musk"],type:"Fresh Aquatic",estimated_cost:"$25 - $40",description:"Budget summer staple."},
-{ id:38,name:"Boss Bottled",brand:"Hugo Boss",time:"Both",notes:["Apple","Cinnamon","Sandalwood"],type:"Woody Spicy",estimated_cost:"$70 - $100",description:"Classic confidence."},
-{ id:39,name:"Chrome",brand:"Azzaro",time:"Day",notes:["Lemon","Rosemary","Musk"],type:"Citrus Aromatic",estimated_cost:"$50 - $80",description:"Clean metallic freshness."},
-{ id:40,name:"Legend Spirit",brand:"Montblanc",time:"Day",notes:["Grapefruit","Lavender","White Musk"],type:"Fresh Woody",estimated_cost:"$60 - $90",description:"Light versatile scent."},
-{ id:41,name:"Noir Extreme",brand:"Tom Ford",time:"Night",notes:["Cardamom","Kulfi","Amber"],type:"Oriental Gourmand",estimated_cost:"$180 - $230",description:"Creamy richness."},
-{ id:42,name:"Wanted By Night",brand:"Azzaro",time:"Night",notes:["Cinnamon","Tobacco","Cedar"],type:"Sweet Spicy",estimated_cost:"$90 - $120",description:"Date night magnet."},
-{ id:43,name:"Percival",brand:"Parfums de Marly",time:"Day",notes:["Lavender","Bergamot","Ambroxan"],type:"Fresh Aromatic",estimated_cost:"$280 - $330",description:"Luxury daily wear."},
-{ id:44,name:"Green Irish Tweed",brand:"Creed",time:"Day",notes:["Lemon","Violet Leaf","Ambergris"],type:"Green Fresh",estimated_cost:"$350 - $450",description:"Elegant green classic."},
-{ id:45,name:"Fahrenheit",brand:"Dior",time:"Night",notes:["Violet","Leather","Nutmeg"],type:"Woody Floral Musk",estimated_cost:"$100 - $140",description:"Iconic bold scent."},
-{ id:46,name:"L'Homme",brand:"Yves Saint Laurent",time:"Day",notes:["Ginger","Bergamot","Tonka Bean"],type:"Woody Aromatic",estimated_cost:"$90 - $120",description:"Smooth elegance."},
-{ id:47,name:"Myself",brand:"Yves Saint Laurent",time:"Both",notes:["Orange Blossom","Bergamot","Ambrox"],type:"Modern Fresh",estimated_cost:"$130 - $160",description:"Clean contemporary style."},
-{ id:48,name:"Colonia",brand:"Acqua di Parma",time:"Day",notes:["Lemon","Lavender","Vetiver"],type:"Citrus Aromatic",estimated_cost:"$150 - $200",description:"Italian refinement."},
-{ id:49,name:"Ani",brand:"Nishane",time:"Night",notes:["Ginger","Vanilla","Bergamot"],type:"Vanilla Spicy",estimated_cost:"$280 - $350",description:"Sweet sophistication."},
-{ id:50,name:"Instant Crush",brand:"Mancera",time:"Both",notes:["Saffron","Amberwood","Vanilla"],type:"Amber Floral",estimated_cost:"$160 - $200",description:"Bold amber sweetness."}
+        function DiscoverTab({ customData }) {
+          // Display the first 3 by default, just like the original design
+          const [colognes, setColognes] = useState([...customData, MASTER_DATABASE[0], MASTER_DATABASE[7], MASTER_DATABASE[8]]);
+          const [searchQuery, setSearchQuery] = useState('');
+          const [timeFilter, setTimeFilter] = useState('All');
 
-];
+          const handleSearch = (e) => {
+            e.preventDefault();
+            const cleanSearch = searchQuery.trim().toLowerCase();
+            if (!cleanSearch) return;
+            
+            // Search our Master Database
+            const foundResults = MASTER_DATABASE.filter(c => 
+              c.name.toLowerCase().includes(cleanSearch) || 
+              c.brand.toLowerCase().includes(cleanSearch) ||
+              c.notes.some(n => n.toLowerCase().includes(cleanSearch))
+            );
 
-/* ================= NOTES ================= */
+            // Combine found results with any custom ones the user created
+            setColognes([...customData, ...foundResults]);
+          };
 
-const AVAILABLE_NOTES = {
-top:["Bergamot","Lemon","Grapefruit","Sea Salt","Black Pepper","Mint"],
-heart:["Lavender","Rose","Jasmine","Cinnamon","Cardamom","Pine"],
-base:["Vanilla","Musk","Cedar","Oud","Patchouli","Amber","Leather","Sandalwood"]
-};
+          const clearSearch = () => {
+             setSearchQuery('');
+             setColognes([...customData, MASTER_DATABASE[0], MASTER_DATABASE[7], MASTER_DATABASE[8]]);
+          };
 
-/* ================= MAIN APP ================= */
+          const filteredColognes = colognes.filter(c => {
+            const matchesTime = timeFilter === 'All' || c.time === timeFilter || c.time === 'Both';
+            return matchesTime;
+          });
 
-function App(){
-const [activeTab,setActiveTab]=useState("discover");
-const [customColognes,setCustomColognes]=useState([]);
+          return (
+            <div className="space-y-6">
+              <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><span>🔍</span> Fragrance Database</h2>
+                  <p className="text-sm text-slate-500 mt-1">Search top fragrances (e.g., "Prada", "Versace", "Vanilla")</p>
+                </div>
 
-return(
-<div className="min-h-screen">
-<header className="bg-slate-900 text-white p-4 flex justify-between">
-<h1 className="text-xl font-bold">ScentCraft</h1>
-<div className="space-x-2">
-<button onClick={()=>setActiveTab("discover")} className="px-3 py-1 bg-amber-500 text-black rounded">Search</button>
-<button onClick={()=>setActiveTab("create")} className="px-3 py-1 bg-white text-black rounded">Create</button>
-</div>
-</header>
+                <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 md:gap-4 items-center">
+                  <div className="relative w-full flex-grow flex items-center">
+                    <input type="text" placeholder="Search brand or name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="block w-full pl-4 pr-24 py-3.5 border border-slate-300 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-amber-500 transition-all text-base md:text-lg" />
+                    {searchQuery && <button type="button" onClick={clearSearch} className="absolute right-[90px] p-2 text-slate-400 hover:text-slate-600">❌</button>}
+                    <button type="submit" disabled={!searchQuery.trim()} className="absolute inset-y-1.5 right-1.5 px-4 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center justify-center min-w-[80px]">
+                      Search
+                    </button>
+                  </div>
 
-<main className="p-6">
-{activeTab==="discover"
-? <DiscoverTab customData={customColognes}/>
-: <CreateTab onCreated={(c)=>{setCustomColognes([c,...customColognes]);setActiveTab("discover");}}/>
-}
-</main>
-</div>
-);
-}
+                  <div className="flex w-full md:w-auto items-center gap-2 bg-slate-100 p-1 rounded-xl shrink-0">
+                    {['All', 'Day', 'Night'].map((time) => (
+                      <button type="button" key={time} onClick={() => setTimeFilter(time)} className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-3 md:py-2.5 rounded-lg text-sm font-bold transition-all ${timeFilter === time ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500'}`}>
+                        {time === 'Day' && "☀️"} {time === 'Night' && "🌙"} {time}
+                      </button>
+                    ))}
+                  </div>
+                </form>
+              </div>
 
-/* ================= DISCOVER ================= */
+              {filteredColognes.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300 px-4">
+                  <span className="text-6xl text-slate-300 block mb-4">💧</span>
+                  <h3 className="text-lg font-bold text-slate-900">No matching fragrances</h3>
+                  <p className="text-slate-500 mt-1">Try searching a different brand or note!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+                  {filteredColognes.map((cologne, idx) => <CologneCard key={`${cologne.id}-${idx}`} cologne={cologne} />)}
+                </div>
+              )}
+            </div>
+          );
+        }
 
-function DiscoverTab({customData}){
-const [search,setSearch]=useState("");
-const [results,setResults]=useState([...customData,...MASTER_DATABASE]);
+        function CreateTab({ onCreated }) {
+          const [formData, setFormData] = useState({ name: '', time: 'Day', topNotes: [], heartNotes: [], baseNotes: [] });
 
-const handleSearch=(e)=>{
-e.preventDefault();
-const q=search.toLowerCase();
-setResults(
-[...customData,...MASTER_DATABASE.filter(c=>
-c.name.toLowerCase().includes(q)||
-c.brand.toLowerCase().includes(q)||
-c.notes.some(n=>n.toLowerCase().includes(q))
-)]
-);
-};
+          const handleToggle = (tier, note) => {
+            setFormData(prev => {
+              const current = prev[tier];
+              if (current.includes(note)) return { ...prev, [tier]: current.filter(n => n !== note) };
+              if (current.length >= 3) return prev;
+              return { ...prev, [tier]: [...current, note] };
+            });
+          };
 
-return(
-<div>
-<form onSubmit={handleSearch} className="mb-6 flex gap-2">
-<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="border p-2 flex-1"/>
-<button className="bg-slate-900 text-white px-4">Search</button>
-</form>
+          const handleCreate = (e) => {
+            e.preventDefault();
+            if (!formData.topNotes.length && !formData.heartNotes.length && !formData.baseNotes.length) return alert("Select at least one note!");
+            onCreated({
+              id: Date.now(), name: formData.name || "Untitled Creation", brand: "Custom Blend", time: formData.time,
+              notes: [...formData.topNotes, ...formData.heartNotes, ...formData.baseNotes], type: "Custom", estimated_cost: "Priceless", description: "A unique blend crafted in the Lab."
+            });
+          };
 
-<div className="grid md:grid-cols-3 gap-4">
-{results.map((c,i)=><CologneCard key={i} cologne={c}/>)}
-</div>
-</div>
-);
-}
+          return (
+            <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 pb-8">
+              <div className="bg-slate-900 px-6 py-10 text-white text-center">
+                <h2 className="text-3xl font-serif font-bold mb-2">The Creation Lab <span>✨</span></h2>
+                <p className="text-slate-400">Blend your perfect signature scent.</p>
+              </div>
 
-/* ================= CREATE ================= */
+              <form onSubmit={handleCreate} className="p-6 md:p-8 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Fragrance Name</label>
+                    <input type="text" required placeholder="e.g. Midnight Mirage" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-amber-500 font-bold text-lg bg-transparent" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Ideal Time</label>
+                    <div className="flex gap-2">
+                      {['Day', 'Night', 'Both'].map(time => (
+                        <button type="button" key={time} onClick={() => setFormData({...formData, time})} className={`flex-1 py-3 rounded-xl border text-sm font-bold transition-all ${formData.time === time ? 'bg-amber-500 border-amber-500 text-slate-900 shadow-md' : 'border-slate-200 text-slate-500'}`}>{time}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-function CreateTab({onCreated}){
-const [name,setName]=useState("");
+                <div className="space-y-8 pt-4">
+                  <NoteSelector title="Top Notes" subtitle="First impression (Max 3)" color="bg-yellow-50 text-yellow-800" active="bg-yellow-400 text-yellow-900 border-yellow-500" options={AVAILABLE_NOTES.top} selected={formData.topNotes} onToggle={n => handleToggle('topNotes', n)} />
+                  <NoteSelector title="Heart Notes" subtitle="Core character (Max 3)" color="bg-pink-50 text-pink-800" active="bg-pink-400 text-pink-900 border-pink-500" options={AVAILABLE_NOTES.heart} selected={formData.heartNotes} onToggle={n => handleToggle('heartNotes', n)} />
+                  <NoteSelector title="Base Notes" subtitle="Lasting foundation (Max 3)" color="bg-amber-50 text-amber-900" active="bg-amber-600 text-white border-amber-700" options={AVAILABLE_NOTES.base} selected={formData.baseNotes} onToggle={n => handleToggle('baseNotes', n)} />
+                </div>
 
-const create=()=>{
-if(!name) return;
-onCreated({
-id:Date.now(),
-name,
-brand:"Custom Blend",
-time:"Both",
-notes:["Custom"],
-type:"Custom",
-estimated_cost:"Priceless",
-description:"Your own unique creation."
-});
-};
+                <button type="submit" className="w-full bg-slate-900 text-white font-bold text-lg py-4 rounded-xl shadow-lg mt-8 active:scale-95 transition-transform">
+                  ➕ Formulate Fragrance
+                </button>
+              </form>
+            </div>
+          );
+        }
 
-return(
-<div>
-<input value={name} onChange={e=>setName(e.target.value)} placeholder="Fragrance name" className="border p-2 mr-2"/>
-<button onClick={create} className="bg-amber-500 px-4 py-2">Create</button>
-</div>
-);
-}
+        function CologneCard({ cologne }) {
+          const isNight = cologne.time === 'Night';
+          const isDay = cologne.time === 'Day';
 
-/* ================= CARD ================= */
+          return (
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col h-full relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3 relative z-10">
+                <div>
+                  <p className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">{cologne.brand}</p>
+                  <h3 className="text-xl font-bold text-slate-900 font-serif leading-tight">{cologne.name}</h3>
+                </div>
+                <div className={`p-2.5 rounded-full shrink-0 ${isNight ? 'bg-indigo-50' : isDay ? 'bg-amber-50' : 'bg-slate-100'}`}>
+                  <span className="text-xl">{isNight ? '🌙' : isDay ? '☀️' : '💨'}</span>
+                </div>
+              </div>
 
-function CologneCard({cologne}){
-return(
-<div className="bg-white p-4 rounded shadow">
-<h3 className="font-bold">{cologne.brand}</h3>
-<h2 className="text-lg">{cologne.name}</h2>
-<p className="text-sm italic">{cologne.description}</p>
-<p className="text-xs mt-2">Notes: {cologne.notes.join(", ")}</p>
-<p className="text-xs mt-2">Time: {cologne.time}</p>
-<p className="text-sm font-bold text-emerald-600 mt-2">{cologne.estimated_cost}</p>
-</div>
-);
-}
+              <p className="text-sm text-slate-600 italic mb-5 line-clamp-2 relative z-10 flex-grow">"{cologne.description}"</p>
 
-const root=ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App/>);
-</script>
+              <div className="mb-4 relative z-10">
+                <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-lg font-bold mb-3">{cologne.type}</span>
+                <div className="flex flex-wrap gap-2">
+                  {cologne.notes.map((note, idx) => (
+                    <span key={idx} className="text-xs bg-slate-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-md font-medium">{note}</span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="pt-4 mt-auto border-t border-slate-100 flex justify-between items-center relative z-10">
+                 <span className="text-xs font-bold text-slate-400">Ideal: <span className="text-slate-800">{cologne.time}</span></span>
+                 <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">💲 {cologne.estimated_cost}</span>
+              </div>
+            </div>
+          );
+        }
+
+        function NoteSelector({ title, subtitle, options, selected, onToggle, color, active }) {
+          return (
+            <div>
+              <div className="mb-3">
+                <h4 className="text-lg font-serif font-bold text-slate-900">{title}</h4>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{subtitle}</p>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {options.map(note => {
+                  const isSel = selected.includes(note);
+                  return (
+                    <button type="button" key={note} onClick={() => onToggle(note)} className={`px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${isSel ? active + ' shadow-md scale-105' : color + ' border-transparent'}`}>
+                      {note} {isSel && '❌'}
+                    </butto
+n>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        // Render the App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
