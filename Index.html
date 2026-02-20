@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScentCraft Global</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Load Babel to read JSX code -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans selection:bg-amber-200">
+    
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ==========================================
+        // MASTER BUILT-IN DATABASE
+        // You can add as many as you want here!
+        // ==========================================
+        const MASTER_DATABASE = [
+          { id: 1, name: "Sauvage", brand: "Dior", time: "Both", notes: ["Bergamot", "Pepper", "Ambroxan"], type: "Fresh Spicy", estimated_cost: "$120 - $160", description: "A radically fresh composition, raw and noble at once." },
+          { id: 2, name: "Bleu de Chanel", brand: "Chanel", time: "Both", notes: ["Grapefruit", "Lemon", "Mint", "Ginger"], type: "Woody Aromatic", estimated_cost: "$130 - $180", description: "A woody, aromatic fragrance for the man who defies convention." },
+          { id: 3, name: "Eros", brand: "Versace", time: "Night", notes: ["Mint", "Green Apple", "Vanilla"], type: "Aromatic Fougere", estimated_cost: "$90 - $130", description: "Fierce, vibrant, and glowing with fresh mint leaves and green apple." },
+          { id: 4, name: "Uomo Born In Roma", brand: "Valentino", time: "Both", notes: ["Mineral Salt", "Ginger", "Vetiver"], type: "Woody Spicy", estimated_cost: "$120 - $150", description: "A modern aromatic vetiver fragrance inspired by Rome." },
+          { id: 5, name: "Y Eau de Parfum", brand: "Yves Saint Laurent", time: "Day", notes: ["Apple", "Ginger", "Sage", "Juniper"], type: "Aromatic Fougere", estimated_cost: "$140 - $170", description: "A bold and woody men's fragrance." },
+          { id: 6, name: "Acqua Di Giò Profumo", brand: "Giorgio Armani", time: "Day", notes: ["Sea Notes", "Bergamot", "Incense"], type: "Aromatic Aquatic", estimated_cost: "$110 - $150", description: "Deep, sophisticated, and intensely masculine." },
+          { id: 7, name: "Spicebomb Extreme", brand: "Viktor&Rolf", time: "Night", notes: ["Vanilla", "Tobacco", "Black Pepper"], type: "Oriental Spicy", estimated_cost: "$120 - $160", description: "An explosive cocktail of masculine sensuality." },
+          { id: 8, name: "Oud Wood", brand: "Tom Ford", time: "Night", notes: ["Oud", "Rosewood", "Cardamom", "Sandalwood"], type: "Woody", estimated_cost: "$295 - $445", description: "Rare, exotic, distinctive." },
+          { id: 9, name: "Aventus", brand: "Creed", time: "Day", notes: ["Pineapple", "Birch", "Musk", "Blackcurrant"], type: "Fruity Chypre", estimated_cost: "$365 - $495", description: "Celebrating strength, power and success." },
+          { id: 10, name: "Prada Black", brand: "Prada", time: "Night", notes: ["Bergamot", "Angelica", "Coumarin", "Amber"], type: "Oriental Woody", estimated_cost: "$110 - $140", description: "A highly energetic and mysterious fragrance." },
+          { id: 11, name: "Guilty Pour Homme", brand: "Gucci", time: "Night", notes: ["Lavender", "Lemon", "Orange Flower", "Cedarwood"], type: "Woody Aromatic", estimated_cost: "$100 - $140", description: "An intense and individual contemporary signature." },
+          { id: 12, name: "1 Million", brand: "Paco Rabanne", time: "Night", notes: ["Blood Mandarin", "Cinnamon", "Leather"], type: "Woody Spicy", estimated_cost: "$100 - $130", description: "The scent of success. Going for gold." },
+          { id: 13, name: "Le Male", brand: "Jean Paul Gaultier", time: "Night", notes: ["Mint", "Lavender", "Vanilla"], type: "Oriental Fougere", estimated_cost: "$90 - $120", description: "A tribute to the mythical figure that has forever inspired the creator: the sailor." },
+          { id: 14, name: "Terre d'Hermès", brand: "Hermès", time: "Day", notes: ["Orange", "Grapefruit", "Pepper", "Vetiver"], type: "Woody Spicy", estimated_cost: "$120 - $160", description: "A symbolic narrative revolving around a raw material and its metamorphosis." },
+          { id: 15, name: "Light Blue Pour Homme", brand: "Dolce & Gabbana", time: "Day", notes: ["Grapefruit", "Bergamot", "Rosemary"], type: "Citrus Aromatic", estimated_cost: "$80 - $110", description: "The quintessence of the joy of life and seduction." }
+        ];
+
+        const AVAILABLE_NOTES = {
+          top: ["Bergamot", "Lemon", "Grapefruit", "Sea Salt", "Black Pepper", "Mint"],
+          heart: ["Lavender", "Rose", "Jasmine", "Cinnamon", "Cardamom", "Pine"],
+          base: ["Vanilla", "Musk", "Cedar", "Oud", "Patchouli", "Amber", "Leather", "Sandalwood"]
+        };
+
+        // ==========================================
+        // MAIN APP
+        // ==========================================
+
+        function App() {
+          const [activeTab, setActiveTab] = useState('discover');
+          const [customColognes, setCustomColognes] = useState([]);
+          
+          return (
+            <div className="min-h-screen">
+              <header className="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+                <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl">🧪</span>
+                      <h1 className="text-2xl font-bold tracking-wider uppercase">Scent<span className="text-amber-400">Craft</span></h1>
+                    </div>
+                    
+                    <nav className="flex bg-slate-800 rounded-full p-1 border border-slate-700 w-full md:w-auto overflow-x-auto shadow-inner">
+                      <button onClick={() => setActiveTab('discover')} className={`flex-1 md:flex-none whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeTab === 'discover' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'}`}>
+                        Search Catalog
+                      </button>
+                      <button onClick={() => setActiveTab('create')} className={`flex-1 md:flex-none whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeTab === 'create' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'}`}>
+                        Create Lab
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-6xl mx-auto px-4 py-8">
+                {activeTab === 'discover' ? <DiscoverTab customData={customColognes} /> : <CreateTab onCreated={(c) => { setCustomColognes([c, ...customColognes]); setActiveTab('discover'); }} />}
+              </main>
+            </div>
+          );
+        }
+
+        function DiscoverTab({ customData }) {
+          // Display the first 3 by default, just like the original design
+          const [colognes, setColognes] = useState([...customData, MASTER_DATABASE[0], MASTER_DATABASE[7], MASTER_DATABASE[8]]);
+          const [searchQuery, setSearchQuery] = useState('');
+          const [timeFilter, setTimeFilter] = useState('All');
+
+          const handleSearch = (e) => {
+            e.preventDefault();
+            const cleanSearch = searchQuery.trim().toLowerCase();
+            if (!cleanSearch) return;
+            
+            // Search our Master Database
+            const foundResults = MASTER_DATABASE.filter(c => 
+              c.name.toLowerCase().includes(cleanSearch) || 
+              c.brand.toLowerCase().includes(cleanSearch) ||
+              c.notes.some(n => n.toLowerCase().includes(cleanSearch))
+            );
+
+            // Combine found results with any custom ones the user created
+            setColognes([...customData, ...foundResults]);
+          };
+
+          const clearSearch = () => {
+             setSearchQuery('');
+             setColognes([...customData, MASTER_DATABASE[0], MASTER_DATABASE[7], MASTER_DATABASE[8]]);
+          };
+
+          const filteredColognes = colognes.filter(c => {
+            const matchesTime = timeFilter === 'All' || c.time === timeFilter || c.time === 'Both';
+            return matchesTime;
+          });
+
+          return (
+            <div className="space-y-6">
+              <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><span>🔍</span> Fragrance Database</h2>
+                  <p className="text-sm text-slate-500 mt-1">Search top fragrances (e.g., "Prada", "Versace", "Vanilla")</p>
+                </div>
+
+                <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 md:gap-4 items-center">
+                  <div className="relative w-full flex-grow flex items-center">
+                    <input type="text" placeholder="Search brand or name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="block w-full pl-4 pr-24 py-3.5 border border-slate-300 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-amber-500 transition-all text-base md:text-lg" />
+                    {searchQuery && <button type="button" onClick={clearSearch} className="absolute right-[90px] p-2 text-slate-400 hover:text-slate-600">❌</button>}
+                    <button type="submit" disabled={!searchQuery.trim()} className="absolute inset-y-1.5 right-1.5 px-4 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 disabled:opacity-50 flex items-center justify-center min-w-[80px]">
+                      Search
+                    </button>
+                  </div>
+
+                  <div className="flex w-full md:w-auto items-center gap-2 bg-slate-100 p-1 rounded-xl shrink-0">
+                    {['All', 'Day', 'Night'].map((time) => (
+                      <button type="button" key={time} onClick={() => setTimeFilter(time)} className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-3 md:py-2.5 rounded-lg text-sm font-bold transition-all ${timeFilter === time ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500'}`}>
+                        {time === 'Day' && "☀️"} {time === 'Night' && "🌙"} {time}
+                      </button>
+                    ))}
+                  </div>
+                </form>
+              </div>
+
+              {filteredColognes.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300 px-4">
+                  <span className="text-6xl text-slate-300 block mb-4">💧</span>
+                  <h3 className="text-lg font-bold text-slate-900">No matching fragrances</h3>
+                  <p className="text-slate-500 mt-1">Try searching a different brand or note!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+                  {filteredColognes.map((cologne, idx) => <CologneCard key={`${cologne.id}-${idx}`} cologne={cologne} />)}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        function CreateTab({ onCreated }) {
+          const [formData, setFormData] = useState({ name: '', time: 'Day', topNotes: [], heartNotes: [], baseNotes: [] });
+
+          const handleToggle = (tier, note) => {
+            setFormData(prev => {
+              const current = prev[tier];
+              if (current.includes(note)) return { ...prev, [tier]: current.filter(n => n !== note) };
+              if (current.length >= 3) return prev;
+              return { ...prev, [tier]: [...current, note] };
+            });
+          };
+
+          const handleCreate = (e) => {
+            e.preventDefault();
+            if (!formData.topNotes.length && !formData.heartNotes.length && !formData.baseNotes.length) return alert("Select at least one note!");
+            onCreated({
+              id: Date.now(), name: formData.name || "Untitled Creation", brand: "Custom Blend", time: formData.time,
+              notes: [...formData.topNotes, ...formData.heartNotes, ...formData.baseNotes], type: "Custom", estimated_cost: "Priceless", description: "A unique blend crafted in the Lab."
+            });
+          };
+
+          return (
+            <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 pb-8">
+              <div className="bg-slate-900 px-6 py-10 text-white text-center">
+                <h2 className="text-3xl font-serif font-bold mb-2">The Creation Lab <span>✨</span></h2>
+                <p className="text-slate-400">Blend your perfect signature scent.</p>
+              </div>
+
+              <form onSubmit={handleCreate} className="p-6 md:p-8 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Fragrance Name</label>
+                    <input type="text" required placeholder="e.g. Midnight Mirage" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-amber-500 font-bold text-lg bg-transparent" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Ideal Time</label>
+                    <div className="flex gap-2">
+                      {['Day', 'Night', 'Both'].map(time => (
+                        <button type="button" key={time} onClick={() => setFormData({...formData, time})} className={`flex-1 py-3 rounded-xl border text-sm font-bold transition-all ${formData.time === time ? 'bg-amber-500 border-amber-500 text-slate-900 shadow-md' : 'border-slate-200 text-slate-500'}`}>{time}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-8 pt-4">
+                  <NoteSelector title="Top Notes" subtitle="First impression (Max 3)" color="bg-yellow-50 text-yellow-800" active="bg-yellow-400 text-yellow-900 border-yellow-500" options={AVAILABLE_NOTES.top} selected={formData.topNotes} onToggle={n => handleToggle('topNotes', n)} />
+                  <NoteSelector title="Heart Notes" subtitle="Core character (Max 3)" color="bg-pink-50 text-pink-800" active="bg-pink-400 text-pink-900 border-pink-500" options={AVAILABLE_NOTES.heart} selected={formData.heartNotes} onToggle={n => handleToggle('heartNotes', n)} />
+                  <NoteSelector title="Base Notes" subtitle="Lasting foundation (Max 3)" color="bg-amber-50 text-amber-900" active="bg-amber-600 text-white border-amber-700" options={AVAILABLE_NOTES.base} selected={formData.baseNotes} onToggle={n => handleToggle('baseNotes', n)} />
+                </div>
+
+                <button type="submit" className="w-full bg-slate-900 text-white font-bold text-lg py-4 rounded-xl shadow-lg mt-8 active:scale-95 transition-transform">
+                  ➕ Formulate Fragrance
+                </button>
+              </form>
+            </div>
+          );
+        }
+
+        function CologneCard({ cologne }) {
+          const isNight = cologne.time === 'Night';
+          const isDay = cologne.time === 'Day';
+
+          return (
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col h-full relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3 relative z-10">
+                <div>
+                  <p className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">{cologne.brand}</p>
+                  <h3 className="text-xl font-bold text-slate-900 font-serif leading-tight">{cologne.name}</h3>
+                </div>
+                <div className={`p-2.5 rounded-full shrink-0 ${isNight ? 'bg-indigo-50' : isDay ? 'bg-amber-50' : 'bg-slate-100'}`}>
+                  <span className="text-xl">{isNight ? '🌙' : isDay ? '☀️' : '💨'}</span>
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-600 italic mb-5 line-clamp-2 relative z-10 flex-grow">"{cologne.description}"</p>
+
+              <div className="mb-4 relative z-10">
+                <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-lg font-bold mb-3">{cologne.type}</span>
+                <div className="flex flex-wrap gap-2">
+                  {cologne.notes.map((note, idx) => (
+                    <span key={idx} className="text-xs bg-slate-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-md font-medium">{note}</span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="pt-4 mt-auto border-t border-slate-100 flex justify-between items-center relative z-10">
+                 <span className="text-xs font-bold text-slate-400">Ideal: <span className="text-slate-800">{cologne.time}</span></span>
+                 <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">💲 {cologne.estimated_cost}</span>
+              </div>
+            </div>
+          );
+        }
+
+        function NoteSelector({ title, subtitle, options, selected, onToggle, color, active }) {
+          return (
+            <div>
+              <div className="mb-3">
+                <h4 className="text-lg font-serif font-bold text-slate-900">{title}</h4>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{subtitle}</p>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {options.map(note => {
+                  const isSel = selected.includes(note);
+                  return (
+                    <button type="button" key={note} onClick={() => onToggle(note)} className={`px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${isSel ? active + ' shadow-md scale-105' : color + ' border-transparent'}`}>
+                      {note} {isSel && '❌'}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        // Render the App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+
